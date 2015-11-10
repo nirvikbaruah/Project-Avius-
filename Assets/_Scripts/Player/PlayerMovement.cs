@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour {
 
         grounded = hit;
 
-        float Horizontal = Input.GetAxis("Horizontal");
+        float Horizontal = Input.GetAxisRaw("Horizontal");
 		float HorzSpeed = Horizontal * (grounded ? WalkSpeed : AirMoveSpeed);
 
 		//Double Tap For sprint
