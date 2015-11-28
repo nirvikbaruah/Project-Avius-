@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerState))]
 public class PlayerMovement : MonoBehaviour {
 
     public float WalkSpeed = 5f;
@@ -15,9 +16,9 @@ public class PlayerMovement : MonoBehaviour {
 	int SprintTapCount = 0;
 	bool isSprinting = false;
 
-    public LayerMask ground;
+    //public LayerMask ground;
 
-    public float GroundCheckDistance = 1.01f;
+    //public float GroundCheckDistance = 1.01f;
     public float JumpForce = 10f;
 
     Rigidbody2D RB;
@@ -25,6 +26,7 @@ public class PlayerMovement : MonoBehaviour {
 
     Vector3 StartingScale;
 
+	PlayerState stateMachine;
 
     public void Start()
     {
@@ -33,6 +35,7 @@ public class PlayerMovement : MonoBehaviour {
 
         StartingScale = transform.localScale;
 		SprintCooler = DoubleTapSpeed;
+		stateMachine = GetComponent<PlayerState> ();
     }
 
     bool grounded = false;
@@ -41,9 +44,7 @@ public class PlayerMovement : MonoBehaviour {
 
     public void Update()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, GroundCheckDistance, ground);
-
-        grounded = hit;
+		grounded = stateMachine.IsGrounded ();
 
         float Horizontal = Input.GetAxisRaw("Horizontal");
 		float HorzSpeed = Horizontal * (grounded ? WalkSpeed : AirMoveSpeed);
@@ -77,7 +78,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
 
-        if (Input.GetButtonDown("Jump") && hit)
+		if (Input.GetButtonDown("Jump") && grounded)
         {
             RB.AddForce(Vector2.up * JumpForce, ForceMode2D.Impulse);
         }
@@ -101,11 +102,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		LastHorz = Horizontal;
     }
-
-    void OnDrawGizmos()
-    {
-        Debug.DrawRay(transform.position, Vector2.down * GroundCheckDistance, grounded ? Color.green : Color.red);
-    }
+		
 
     public void OnDestroy()
     {
