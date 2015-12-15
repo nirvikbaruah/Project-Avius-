@@ -43,7 +43,19 @@ public class PlayerState : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        
+        float healthPercentage = playerHealth.GetHealth() / playerHealth.StartingHealth;
+        HealthBar.fillAmount = healthPercentage;
+
+        //TESTING CODE
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            playerHealth.TakeDamage(0.3f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            playerHealth.TakeDamage(-0.3f);
+        }
     }
 
 	void OnDrawGizmos()
