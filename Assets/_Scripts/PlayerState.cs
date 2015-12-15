@@ -13,14 +13,16 @@ public class PlayerState : MonoBehaviour {
 		It is also has helper functions, e.g. to find out if the charater is grounded;
 	*/
 
-	[HideInInspector]
-	public CharacterState CurrentState;
+	[HideInInspector] public CharacterState CurrentState;
 
-	[HideInInspector]
-	public Vector2 currentSpeed;
+	[HideInInspector] public Vector2 currentSpeed;
 
-	[HideInInspector]
-	public float sprintSpeed;
+	[HideInInspector] public float sprintSpeed;
+
+    [HideInInspector]
+    public float currentStamina = 6.7f;
+    [HideInInspector]
+    public float maxStamina = 10f;
 
 	public float GroundCheckDistance = 2.4f;
 	public LayerMask WhatIsGround;
@@ -45,6 +47,11 @@ public class PlayerState : MonoBehaviour {
     {
         float healthPercentage = playerHealth.GetHealth() / playerHealth.StartingHealth;
         HealthBar.fillAmount = healthPercentage;
+
+        float staminaPercentage = currentStamina / maxStamina;
+        StaminaCircle.fillAmount = staminaPercentage;
+
+        Debug.Log(staminaPercentage + " = " + currentStamina + " / " + maxStamina);
 
         //TESTING CODE
         if (Input.GetKeyDown(KeyCode.I))
