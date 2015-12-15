@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
+[RequireComponent(typeof(Health), typeof(PlayerMovement))]
 public class PlayerState : MonoBehaviour {
 
 	/*
@@ -28,14 +30,21 @@ public class PlayerState : MonoBehaviour {
 		return hit;
 	}
 
+    public Image StaminaCircle;
+    public Image HealthBar;
+
+    private Health playerHealth;
+
 	// Use this for initialization
 	void Start () {
-	
+        playerHealth = GetComponent<Health>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	}
+	void Update ()
+    {
+        
+    }
 
 	void OnDrawGizmos()
 	{
