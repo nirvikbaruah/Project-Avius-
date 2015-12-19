@@ -51,8 +51,6 @@ public class PlayerState : MonoBehaviour {
         float staminaPercentage = currentStamina / maxStamina;
         StaminaCircle.fillAmount = staminaPercentage;
 
-        Debug.Log(staminaPercentage + " = " + currentStamina + " / " + maxStamina);
-
         //TESTING CODE
         if (Input.GetKeyDown(KeyCode.I))
         {
