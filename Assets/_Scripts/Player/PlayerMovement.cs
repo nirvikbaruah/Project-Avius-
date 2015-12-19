@@ -12,6 +12,11 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float DoubleTapSpeed = 0.5f;
 
+	public float Stamina = 10f;
+	public float StaminaUsedPerSecond = 1f;
+	public float StaminaRegenPerSecond = 0.5f;
+
+	float currentStamina;
 	float SprintCooler;
 	int SprintTapCount = 0;
 	bool isSprinting = false;
@@ -36,6 +41,8 @@ public class PlayerMovement : MonoBehaviour {
         StartingScale = transform.localScale;
 		SprintCooler = DoubleTapSpeed;
 		stateMachine = GetComponent<PlayerState> ();
+
+		currentStamina = Stamina;
     }
 
     bool grounded = false;
@@ -49,7 +56,7 @@ public class PlayerMovement : MonoBehaviour {
         float Horizontal = Input.GetAxisRaw("Horizontal");
 		float HorzSpeed = Horizontal * (grounded ? WalkSpeed : AirMoveSpeed);
 
-		//Double Tap For sprint
+		//Check for a double tap to see if sprinting
 		if (Mathf.Abs(Horizontal) != 0 && Mathf.Abs(LastHorz) == 0) {
 			Debug.Log ("Tapped");
 			//Tap
@@ -68,12 +75,15 @@ public class PlayerMovement : MonoBehaviour {
 			SprintTapCount = 0 ;
 		}
 
-		if (Horizontal == 0) {
+		if (Horizontal == 0 || currentStamina <= 0) {
 			isSprinting = false;
 		}
 
 		if (isSprinting) {
+			currentStamina -= StaminaUsedPerSecond * Time.deltaTime;
 			HorzSpeed = Horizontal * SprintSpeed;
+		} else {
+			currentStamina += StaminaRegenPerSecond * Time.deltaTime;
 		}
 
 		RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
@@ -101,6 +111,8 @@ public class PlayerMovement : MonoBehaviour {
         }
 
 		LastHorz = Horizontal;
+
+		UpdateStateMachine ();
     }
 		
 
@@ -108,4 +120,9 @@ public class PlayerMovement : MonoBehaviour {
     {
         Application.LoadLevel(Application.loadedLevel);
     }
+
+	void UpdateStateMachine() {
+		stateMachine.currentStamina = currentStamina;
+		//stateMachine.currentSpeed = RB.velocity;
+	}
 }
