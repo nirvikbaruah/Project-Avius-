@@ -12,14 +12,30 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float DoubleTapSpeed = 0.5f;
 
+	public float Stamina = 10f;
+	public float StaminaUsedPerSecond = 1f;
+	public float StaminaRegenPerSecond = 0.5f;
+
+	public float sprintingJumpIncrease;
+	public float walkingJumpIncrease;
+	public float airdashDistance = 10f;
+	private bool alreadyDashed = false;
+
+
+
+	float currentStamina;
 	float SprintCooler;
 	int SprintTapCount = 0;
 	bool isSprinting = false;
+
+	double lastAirDash;
+	bool airDashed = false;
 
     //public LayerMask ground;
 
     //public float GroundCheckDistance = 1.01f;
     public float JumpForce = 10f;
+	private float setSpeed;
 
     Rigidbody2D RB;
     Animator anim;
@@ -32,10 +48,13 @@ public class PlayerMovement : MonoBehaviour {
     {
         RB = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+		setSpeed = JumpForce;
 
         StartingScale = transform.localScale;
 		SprintCooler = DoubleTapSpeed;
 		stateMachine = GetComponent<PlayerState> ();
+
+		currentStamina = Stamina;
     }
 
     bool grounded = false;
@@ -49,12 +68,28 @@ public class PlayerMovement : MonoBehaviour {
         float Horizontal = Input.GetAxisRaw("Horizontal");
 		float HorzSpeed = Horizontal * (grounded ? WalkSpeed : AirMoveSpeed);
 
-		//Double Tap For sprint
+		if (!grounded && !alreadyDashed) {
+			if (Input.GetKeyDown (KeyCode.D)){
+				RB.velocity = new Vector2(airdashDistance * 1000f, 5f);
+				Debug.Log ("Airdash right");
+				alreadyDashed = true;
+			}
+			if (Input.GetKeyDown (KeyCode.A)){
+				RB.velocity = new Vector2(airdashDistance * -1000f, 5f);
+				Debug.Log ("Airdash left");
+				alreadyDashed = true;
+			}
+		}
+
+
+		if (grounded) {
+			alreadyDashed = false;
+		}
+
+		//Check for a double tap to see if sprinting
 		if (Mathf.Abs(Horizontal) != 0 && Mathf.Abs(LastHorz) == 0) {
-			Debug.Log ("Tapped");
 			//Tap
 			if (grounded && SprintCooler > 0 && SprintTapCount == 1){
-				Debug.Log ("Started Sprinting");
 				isSprinting = true;
 			} else {
 				SprintCooler = DoubleTapSpeed; 
@@ -68,12 +103,16 @@ public class PlayerMovement : MonoBehaviour {
 			SprintTapCount = 0 ;
 		}
 
-		if (Horizontal == 0) {
+		if (Horizontal == 0 || currentStamina <= 0) {
 			isSprinting = false;
 		}
 
 		if (isSprinting) {
+			currentStamina -= StaminaUsedPerSecond * Time.deltaTime;
 			HorzSpeed = Horizontal * SprintSpeed;
+			JumpForce = setSpeed + sprintingJumpIncrease;
+		} else {
+			currentStamina += StaminaRegenPerSecond * Time.deltaTime;
 		}
 
 		RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
@@ -82,17 +121,18 @@ public class PlayerMovement : MonoBehaviour {
         {
             RB.AddForce(Vector2.up * JumpForce, ForceMode2D.Impulse);
         }
-
         if (anim)
         {
             if (Horizontal != 0)
             {
                 transform.localScale = new Vector3((RB.velocity.x >= 0 ? StartingScale.x : -StartingScale.x), StartingScale.y);
                 anim.SetBool("PlayRunAnim", true);
+				JumpForce = setSpeed + walkingJumpIncrease;
             }
             else
             {
                 anim.SetBool("PlayRunAnim", false);
+				JumpForce = setSpeed;
             }
 
             anim.SetBool("isMoving", RB.velocity.x != 0);
@@ -101,6 +141,8 @@ public class PlayerMovement : MonoBehaviour {
         }
 
 		LastHorz = Horizontal;
+
+		UpdateStateMachine ();
     }
 		
 
@@ -108,4 +150,9 @@ public class PlayerMovement : MonoBehaviour {
     {
         Application.LoadLevel(Application.loadedLevel);
     }
+
+	void UpdateStateMachine() {
+		stateMachine.currentStamina = currentStamina;
+		//stateMachine.currentSpeed = RB.velocity;
+	}
 }
