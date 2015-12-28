@@ -16,11 +16,16 @@ public class PlayerMovement : MonoBehaviour {
 	public float StaminaUsedPerSecond = 1f;
 	public float StaminaRegenPerSecond = 0.5f;
 
+<<<<<<< HEAD
 	public float sprintingJumpIncrease;
 	public float walkingJumpIncrease;
 	public float airdashDistance = 10f;
 	private bool alreadyDashed = false;
 
+
+
+=======
+>>>>>>> 26f57656c203e82ed7d751a9a1a7d017d50d4036
 	float currentStamina;
 	float SprintCooler;
 	int SprintTapCount = 0;
@@ -65,6 +70,8 @@ public class PlayerMovement : MonoBehaviour {
 
         float Horizontal = Input.GetAxisRaw("Horizontal");
 		float HorzSpeed = Horizontal * (grounded ? WalkSpeed : AirMoveSpeed);
+
+<<<<<<< HEAD
 		if (!grounded && !alreadyDashed) {
 			if (Input.GetKeyDown (KeyCode.D)){
 				RB.velocity = new Vector2(airdashDistance * 1000f, 5f);
@@ -83,6 +90,8 @@ public class PlayerMovement : MonoBehaviour {
 			alreadyDashed = false;
 		}
 
+=======
+>>>>>>> 26f57656c203e82ed7d751a9a1a7d017d50d4036
 		//Check for a double tap to see if sprinting
 		if (Mathf.Abs(Horizontal) != 0 && Mathf.Abs(LastHorz) == 0) {
 			//Tap
@@ -107,7 +116,10 @@ public class PlayerMovement : MonoBehaviour {
 		if (isSprinting) {
 			currentStamina -= StaminaUsedPerSecond * Time.deltaTime;
 			HorzSpeed = Horizontal * SprintSpeed;
+<<<<<<< HEAD
 			JumpForce = setSpeed + sprintingJumpIncrease;
+=======
+>>>>>>> 26f57656c203e82ed7d751a9a1a7d017d50d4036
 		} else {
 			currentStamina += StaminaRegenPerSecond * Time.deltaTime;
 		}
