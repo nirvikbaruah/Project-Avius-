@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour {
 	public float DoubleTapSpeed = 0.5f;
 
 	public float Stamina = 10f;
+    public float MaxStamina = 10f;
 	public float StaminaUsedPerSecond = 1f;
 	public float StaminaRegenPerSecond = 0.5f;
 
@@ -90,7 +91,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (grounded && SprintCooler > 0 && SprintTapCount == 1){
 				isSprinting = true;
 			} else {
-				SprintCooler = DoubleTapSpeed; 
+				SprintCooler = DoubleTapSpeed;
 				SprintTapCount += 1;
 			}
 		}
@@ -110,7 +111,10 @@ public class PlayerMovement : MonoBehaviour {
 			HorzSpeed = Horizontal * SprintSpeed;
 			JumpForce = setSpeed + sprintingJumpIncrease;
 		} else {
-			currentStamina += StaminaRegenPerSecond * Time.deltaTime;
+            if (!(currentStamina / MaxStamina >= 1))
+            {
+                currentStamina += StaminaRegenPerSecond * Time.deltaTime;
+            }
 		}
 
 		RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
@@ -151,6 +155,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	void UpdateStateMachine() {
 		stateMachine.currentStamina = currentStamina;
+        stateMachine.maxStamina = MaxStamina;
 		//stateMachine.currentSpeed = RB.velocity;
 	}
 }
