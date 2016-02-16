@@ -7,8 +7,6 @@ public class PlayerMovement : MonoBehaviour {
 
     public float WalkSpeed = 5f;
     public float SprintSpeed = 10f;
-    public float AirMoveSpeed = 1f;
-    public float AirDashForce = 20f;
 
 	public float DoubleTapSpeed = 0.5f;
 
@@ -19,7 +17,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	public float sprintingJumpIncrease;
 	public float walkingJumpIncrease;
-	public float airdashDistance = 10f;
+
+	public float AirdashForce = 10f;
 	private bool alreadyDashed = false;
 
 	float currentStamina;
@@ -60,25 +59,31 @@ public class PlayerMovement : MonoBehaviour {
 
 	float LastHorz = 0;
 
-    public void Update()
+    bool isDashing = true;
+
+    public void FixedUpdate()
     {
 		grounded = stateMachine.IsGrounded ();
 
         float Horizontal = Input.GetAxisRaw("Horizontal");
-		float HorzSpeed = Horizontal * (grounded ? WalkSpeed : AirMoveSpeed);
+		float HorzSpeed = (grounded ? Horizontal * WalkSpeed : RB.velocity.x * 0.99f);
 
-		if (!grounded && !alreadyDashed) {
-			if (Input.GetKeyDown (KeyCode.D)){
-				RB.velocity = new Vector2(airdashDistance * 1000f, 5f);
-				Debug.Log ("Airdash right");
-				alreadyDashed = true;
-			}
-			if (Input.GetKeyDown (KeyCode.A)){
-				RB.velocity = new Vector2(airdashDistance * -1000f, 5f);
-				Debug.Log ("Airdash left");
-				alreadyDashed = true;
-			}
-		}
+        if (!grounded && !alreadyDashed)
+        {
+            // 
+            if (Horizontal > 0)
+            {
+                RB.AddForce(new Vector2(AirdashForce, 5f), ForceMode2D.Impulse);
+                Debug.Log("Airdash right");
+                alreadyDashed = true;
+            }
+            else if (Horizontal < 0)
+            {
+                RB.AddForce(new Vector2(-AirdashForce, 5f), ForceMode2D.Impulse);
+                Debug.Log("Airdash left");
+                alreadyDashed = true;
+            }
+        }
 
 
 		if (grounded) {
@@ -117,7 +122,11 @@ public class PlayerMovement : MonoBehaviour {
             }
 		}
 
-		RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
+        //Move
+        if (grounded)
+        {
+            RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
+        }
 
 		if (Input.GetButtonDown("Jump") && grounded)
         {
