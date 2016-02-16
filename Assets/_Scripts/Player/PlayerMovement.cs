@@ -138,7 +138,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && grounded)
         {
-            RB.AddForce(Vector2.up * JumpForce, ForceMode2D.Impulse);
+            float forceToJumpAt = JumpForce;
+            if (isSprinting) { forceToJumpAt += sprintingJumpIncrease; }
+            else if (HorzSpeed != 0) { forceToJumpAt += walkingJumpIncrease; }
+
+            RB.AddForce(Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
         }
 
         //Animation state machine config
@@ -164,12 +168,6 @@ public class PlayerMovement : MonoBehaviour
         LastHorz = Horizontal;
 
         UpdateStateMachine();
-    }
-
-    public void OnGUI()
-    {
-        GUI.TextArea(new Rect(5, 5, 100, 25), TapCount.ToString());
-        GUI.TextArea(new Rect(5, 35, 100, 25), TapCooler.ToString());
     }
 
     public void OnDestroy()
