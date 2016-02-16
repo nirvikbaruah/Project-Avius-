@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerState))]
@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float WalkSpeed = 5f;
     public float SprintSpeed = 10f;
+    public float AirMoveSpeed = 2f;
 
     public float DoubleTapSpeed = 0.5f;
 
@@ -16,8 +17,9 @@ public class PlayerMovement : MonoBehaviour
     public float StaminaUsedPerSecond = 1f;
     public float StaminaRegenPerSecond = 0.5f;
 
-    public float sprintingJumpIncrease;
-    public float walkingJumpIncrease;
+    public float SprintingJumpIncrease = 4;
+    public float WalkingJumpIncrease = 2;
+    public float WallJumpForce = 10;
 
     public float AirdashForce = 10f;
 
@@ -56,17 +58,17 @@ public class PlayerMovement : MonoBehaviour
     }
 
     bool grounded = false;
-
     float LastHorz = 0;
-
     bool isDashing = true;
+    bool hasWallJumped = false;
 
     public void FixedUpdate()
     {
         grounded = stateMachine.IsGrounded();
+        if (grounded) { hasWallJumped = false; }
 
         float Horizontal = Input.GetAxisRaw("Horizontal");
-        float HorzSpeed = (grounded ? Horizontal * WalkSpeed : RB.velocity.x * 0.99f);
+        float HorzSpeed = (grounded || hasWallJumped ? Horizontal * WalkSpeed : Horizontal * AirMoveSpeed);
 
         //Check for a double tap
         if (Mathf.Abs(Horizontal) != 0 && Mathf.Abs(LastHorz) == 0)
@@ -120,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentStamina -= StaminaUsedPerSecond * Time.deltaTime;
             HorzSpeed = Horizontal * SprintSpeed;
-            JumpForce = setSpeed + sprintingJumpIncrease;
+            JumpForce = setSpeed + SprintingJumpIncrease;
         }
         else
         {
@@ -131,16 +133,15 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Move
-        if (grounded)
-        {
-            RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
-        }
+        RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
 
-        if (Input.GetButtonDown("Jump") && grounded)
+        if (Input.GetButtonDown("Jump") && (grounded || stateMachine.IsNextToWall()))
         {
-            float forceToJumpAt = JumpForce;
-            if (isSprinting) { forceToJumpAt += sprintingJumpIncrease; }
-            else if (HorzSpeed != 0) { forceToJumpAt += walkingJumpIncrease; }
+            if (stateMachine.IsNextToWall()) { hasWallJumped = true; }
+
+            float forceToJumpAt = stateMachine.IsNextToWall() ? WallJumpForce : JumpForce;
+            if (isSprinting) { forceToJumpAt += SprintingJumpIncrease; }
+            else if (HorzSpeed != 0) { forceToJumpAt += WalkingJumpIncrease; }
 
             RB.AddForce(Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
         }
@@ -152,7 +153,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 transform.localScale = new Vector3((Horizontal >= 0 ? StartingScale.x : -StartingScale.x), StartingScale.y);
                 anim.SetBool("PlayRunAnim", true);
-                JumpForce = setSpeed + walkingJumpIncrease;
+                JumpForce = setSpeed + WalkingJumpIncrease;
             }
             else
             {
@@ -172,7 +173,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnDestroy()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void UpdateStateMachine()

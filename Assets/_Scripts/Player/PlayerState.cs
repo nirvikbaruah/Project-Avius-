@@ -24,13 +24,23 @@ public class PlayerState : MonoBehaviour {
     [HideInInspector]
     public float maxStamina = 10f;
 
-	public float GroundCheckDistance = 2.4f;
+    public float WallCheckDistance = 1f;
+    public LayerMask WhatIsWall;
+
+    public float GroundCheckDistance = 2.4f;
 	public LayerMask WhatIsGround;
 
 	public bool IsGrounded() {
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, GroundCheckDistance, WhatIsGround);
 		return hit;
 	}
+
+    public bool IsNextToWall()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, WallCheckDistance, WhatIsWall);
+        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, -Vector2.right, WallCheckDistance, WhatIsWall);
+        return hit || hitLeft;
+    }
 
     public Image StaminaCircle;
     public Image HealthBar;
@@ -66,7 +76,9 @@ public class PlayerState : MonoBehaviour {
 	void OnDrawGizmos()
 	{
 		Debug.DrawRay(transform.position, Vector2.down * GroundCheckDistance, IsGrounded() ? Color.green : Color.red);
-	}
+        Debug.DrawRay(transform.position, Vector2.right * WallCheckDistance, IsNextToWall() ? Color.green : Color.red);
+        Debug.DrawRay(transform.position, -Vector2.right * WallCheckDistance, IsNextToWall() ? Color.green : Color.red);
+    }
 }
 
 public enum CharacterState {
