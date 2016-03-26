@@ -20,8 +20,11 @@ public class PlayerMovement : MonoBehaviour
     public float SprintingJumpIncrease = 4;
     public float WalkingJumpIncrease = 2;
     public float WallJumpForce = 10;
+<<<<<<< HEAD
 	public float slideDistance;
 	public bool slide = false;
+=======
+>>>>>>> be551bc3ab6a2e6079f2de0025844dc3f9546de2
 
     public float AirdashForce = 10f;
 
@@ -125,6 +128,7 @@ public class PlayerMovement : MonoBehaviour
             currentStamina -= StaminaUsedPerSecond * Time.deltaTime;
             HorzSpeed = Horizontal * SprintSpeed;
             JumpForce = setSpeed + SprintingJumpIncrease;
+<<<<<<< HEAD
 
 			if (Input.GetKeyDown ("s")) {
 				slide = true;
@@ -135,6 +139,11 @@ public class PlayerMovement : MonoBehaviour
 			if (slide) {
 				slide = false;
 			}
+=======
+        }
+        else
+        {
+>>>>>>> be551bc3ab6a2e6079f2de0025844dc3f9546de2
             if (!(currentStamina / MaxStamina >= 1))
             {
                 currentStamina += StaminaRegenPerSecond * Time.deltaTime;
@@ -173,7 +182,10 @@ public class PlayerMovement : MonoBehaviour
             anim.SetBool("isMoving", RB.velocity.x != 0);
             anim.SetBool("Jumped", !grounded);
             anim.SetBool("Landed", grounded);
+<<<<<<< HEAD
 			anim.SetBool("Slide", slide);
+=======
+>>>>>>> be551bc3ab6a2e6079f2de0025844dc3f9546de2
         }
 
         LastHorz = Horizontal;
