@@ -20,10 +20,19 @@ public class PlayerMovement : MonoBehaviour
     public float SprintingJumpIncrease = 4;
     public float WalkingJumpIncrease = 2;
     public float WallJumpForce = 10;
+<<<<<<< HEAD
 	public float slideDistance;
 	public bool slide = false;
 
 	private float jumpHold;
+=======
+
+	//Distance player can slide in seconds
+	public float slideDistance = 1f;
+	private float initialDistance;
+	public bool slide = false;
+
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
 
     public float AirdashForce = 10f;
 
@@ -59,6 +68,10 @@ public class PlayerMovement : MonoBehaviour
         stateMachine = GetComponent<PlayerState>();
 
         currentStamina = Stamina;
+<<<<<<< HEAD
+=======
+		initialDistance = slideDistance;
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
     }
 
     bool grounded = false;
@@ -66,6 +79,19 @@ public class PlayerMovement : MonoBehaviour
     bool isDashing = true;
     bool hasWallJumped = false;
 
+<<<<<<< HEAD
+=======
+	public void Update(){
+		if (slide) {
+			slideDistance -= Time.deltaTime;
+			Debug.Log (slideDistance);
+
+			if (slideDistance <= 0f) {
+				isSprinting = false;
+			}
+		}
+	}
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
 
     public void FixedUpdate()
     {
@@ -121,7 +147,10 @@ public class PlayerMovement : MonoBehaviour
         if (Horizontal == 0 || currentStamina <= 0)
         {
             isSprinting = false;
+<<<<<<< HEAD
 
+=======
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
         }
 
         if (isSprinting)
@@ -130,15 +159,28 @@ public class PlayerMovement : MonoBehaviour
             HorzSpeed = Horizontal * SprintSpeed;
             JumpForce = setSpeed + SprintingJumpIncrease;
 
+<<<<<<< HEAD
 			if (Input.GetKeyDown ("s")) {
+=======
+			if (Input.GetKeyDown ("s") && slideDistance > 0f) {
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
 				slide = true;
 			}
         }
         else
+<<<<<<< HEAD
         {
 			if (slide) {
 				slide = false;
 			}
+=======
+   		{
+			if (slide) {
+				slide = false;
+				slideDistance = initialDistance;
+			}
+
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
             if (!(currentStamina / MaxStamina >= 1))
             {
                 currentStamina += StaminaRegenPerSecond * Time.deltaTime;
@@ -148,15 +190,24 @@ public class PlayerMovement : MonoBehaviour
         //Move
         RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
 
+<<<<<<< HEAD
 
         if (Input.GetButtonUp("Jump") && (grounded || stateMachine.IsNextToWall()))
+=======
+        if (Input.GetButtonDown("Jump") && (grounded || stateMachine.IsNextToWall()))
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
         {
             if (stateMachine.IsNextToWall()) { hasWallJumped = true; }
 
             float forceToJumpAt = stateMachine.IsNextToWall() ? WallJumpForce : JumpForce;
             if (isSprinting) { forceToJumpAt += SprintingJumpIncrease; }
             else if (HorzSpeed != 0) { forceToJumpAt += WalkingJumpIncrease; }
+<<<<<<< HEAD
 			RB.AddForce(Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
+=======
+
+            RB.AddForce(Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
         }
 
         //Animation state machine config
@@ -178,6 +229,10 @@ public class PlayerMovement : MonoBehaviour
             anim.SetBool("Jumped", !grounded);
             anim.SetBool("Landed", grounded);
 			anim.SetBool("Slide", slide);
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8fcf238038c747f7178b56cf32da024825f1e2f
         }
 
         LastHorz = Horizontal;
