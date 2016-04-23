@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
 	public float slideDistance;
 	public bool slide = false;
 
+	private float jumpHold;
+
     public float AirdashForce = 10f;
 
     float currentStamina;
@@ -63,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     float LastHorz = 0;
     bool isDashing = true;
     bool hasWallJumped = false;
+
 
     public void FixedUpdate()
     {
@@ -118,6 +121,7 @@ public class PlayerMovement : MonoBehaviour
         if (Horizontal == 0 || currentStamina <= 0)
         {
             isSprinting = false;
+
         }
 
         if (isSprinting)
@@ -144,15 +148,15 @@ public class PlayerMovement : MonoBehaviour
         //Move
         RB.velocity = new Vector2(HorzSpeed, RB.velocity.y);
 
-        if (Input.GetButtonDown("Jump") && (grounded || stateMachine.IsNextToWall()))
+
+        if (Input.GetButtonUp("Jump") && (grounded || stateMachine.IsNextToWall()))
         {
             if (stateMachine.IsNextToWall()) { hasWallJumped = true; }
 
             float forceToJumpAt = stateMachine.IsNextToWall() ? WallJumpForce : JumpForce;
             if (isSprinting) { forceToJumpAt += SprintingJumpIncrease; }
             else if (HorzSpeed != 0) { forceToJumpAt += WalkingJumpIncrease; }
-
-            RB.AddForce(Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
+			RB.AddForce(Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
         }
 
         //Animation state machine config
