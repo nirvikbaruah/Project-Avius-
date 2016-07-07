@@ -1,4 +1,4 @@
-5.3.4f1:2.2.0.0
+5.3.5f1:2.2.0.0
 StandaloneOSXIntel
 /Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEngine.dll
 /Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll
