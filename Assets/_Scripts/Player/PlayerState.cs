@@ -42,6 +42,7 @@ public class PlayerState : MonoBehaviour {
         return hit || hitLeft;
     }
 
+
     public Image StaminaCircle;
     public Image HealthBar;
 

@@ -45,10 +45,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Checkpoints.cs" />
      <Compile Include="Assets\_Scripts\BulletScript.cs" />
      <Compile Include="Assets\_Scripts\CameraFollow.cs" />
      <Compile Include="Assets\_Scripts\ChargeEnemy.cs" />
+     <Compile Include="Assets\_Scripts\Checkpoints.cs" />
      <Compile Include="Assets\_Scripts\Creatures\Health.cs" />
      <Compile Include="Assets\_Scripts\EnemyController.cs" />
      <Compile Include="Assets\_Scripts\LeechMini.cs" />
