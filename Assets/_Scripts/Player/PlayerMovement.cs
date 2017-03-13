@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
 	public float slideDistance = 1f;
 	public bool slide = false;
 
+
 	private float jumpHold;
 	private bool addSlide = false;
 
@@ -68,6 +69,8 @@ public class PlayerMovement : MonoBehaviour
 
         currentStamina = Stamina;
 		initialDistance = slideDistance;
+
+		this.GetComponent<DistanceJoint2D>().enabled = false;
     }
 
     bool grounded = false;
@@ -78,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
 	public void Update(){
 		if (!slide && addSlide) {
 			if (slideDistance < initialDistance) {
-				slideDistance += Time.deltaTime;
+				slideDistance = initialDistance;
 			} else {
 				addSlide = false;
 			}
@@ -87,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
 			slideDistance -= Time.deltaTime;
 			addSlide = false;
 
-			if (slideDistance <= 0f || currentStamina <= 0f) {
+			if (slideDistance <= 0f) {
 				isSprinting = false;
 				slide = false;
 			}
@@ -101,6 +104,7 @@ public class PlayerMovement : MonoBehaviour
 
         float Horizontal = Input.GetAxisRaw("Horizontal");
         float HorzSpeed = (grounded || hasWallJumped ? Horizontal * WalkSpeed : Horizontal * AirMoveSpeed);
+
 
         //Check for a double tap
         if (Mathf.Abs(Horizontal) != 0 && Mathf.Abs(LastHorz) == 0)
@@ -116,9 +120,10 @@ public class PlayerMovement : MonoBehaviour
                 {
                     if (Horizontal > 0)
                     {
-						RB.AddForce (Vector2.right * AirdashForce, ForceMode2D.Impulse);
 						airDash = true;
-
+						Vector3 velocity = RB.velocity;
+						velocity = Vector3.right * 100f;
+						RB.velocity = velocity;
                         TapCount++;
                     }
                     else if (Horizontal < 0)
@@ -126,6 +131,7 @@ public class PlayerMovement : MonoBehaviour
 						RB.AddForce (Vector2.left * AirdashForce, ForceMode2D.Impulse);
                         TapCount++;
 						airDash = true;
+						Debug.Log ("Left");
                     }
                 }
                 else
@@ -156,8 +162,8 @@ public class PlayerMovement : MonoBehaviour
 			HorzSpeed = Horizontal * SprintSpeed;
 			JumpForce = setSpeed + SprintingJumpIncrease;
 		}
-
-		if (Input.GetKey ("s") && slideDistance > 0f) {
+			
+		if (Input.GetKey ("s") && slideDistance > 0f && isSprinting && grounded) {
 			slide = true;
 		} else {
 			if (slide) {
@@ -177,10 +183,16 @@ public class PlayerMovement : MonoBehaviour
 
 		if (Input.GetKey ("left shift")) {
 			line.SetActive (true);
+			if (Input.GetMouseButtonDown (1) && !grounded) {
+				this.GetComponent<DistanceJoint2D> ().enabled = true;
+			}
 		}
 		if (Input.GetKeyUp ("left shift")) {
 			line.SetActive (false);
+			this.GetComponent<DistanceJoint2D> ().enabled = false;
 		}
+			
+
 
 		if (Input.GetButtonDown ("Jump") && (grounded || stateMachine.IsNextToWall ())) {
 			if (stateMachine.IsNextToWall ()) {
@@ -188,7 +200,6 @@ public class PlayerMovement : MonoBehaviour
 			}
 
 			float forceToJumpAt = stateMachine.IsNextToWall () ? WallJumpForce : JumpForce;
-			forceToJumpAt /= 2;
 			if (isSprinting) {
 				forceToJumpAt += SprintingJumpIncrease;
 			} else if (HorzSpeed != 0) {
@@ -196,7 +207,6 @@ public class PlayerMovement : MonoBehaviour
 			}
 			RB.AddForce (Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
 
-			RB.AddForce (Vector2.up * forceToJumpAt, ForceMode2D.Impulse);
 		}
 
 		//Animation state machine config

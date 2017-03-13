@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\GrapplingHook.cs" />
      <Compile Include="Assets\_Scripts\BulletScript.cs" />
      <Compile Include="Assets\_Scripts\CameraFollow.cs" />
      <Compile Include="Assets\_Scripts\ChargeEnemy.cs" />
